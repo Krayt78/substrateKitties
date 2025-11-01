@@ -113,3 +113,11 @@ fn system_and_balances_work() {
 		assert_ok!(PalletBalances::mint_into(&BOB, 100));
 	});
 }
+
+#[test]
+fn create_kitty_check_if_signed() {
+	new_test_ext().execute_with(|| {
+		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::none()), DispatchError::BadOrigin);
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+	});
+}
