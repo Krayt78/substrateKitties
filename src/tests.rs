@@ -134,9 +134,9 @@ fn create_kitty_emits_event() {
 #[test]
 fn create_kitty_increments_kitty_count(){
 	new_test_ext().execute_with(|| {
-		let starting_count = KittyCount::<TestRuntime>::get().unwrap_or(0);
+		let starting_count = KittyCount::<TestRuntime>::get();
 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
-		let after_mint_count = KittyCount::<TestRuntime>::get().unwrap_or(0);
+		let after_mint_count = KittyCount::<TestRuntime>::get();
 		assert_eq!(starting_count+1, after_mint_count);
 	});
 }
@@ -145,7 +145,7 @@ fn create_kitty_increments_kitty_count(){
 fn create_kitty_overflows_kitty_count(){
 	new_test_ext().execute_with(|| {
 		let max_u32 = u32::MAX;
-		KittyCount::<TestRuntime>::set(Some(max_u32));
+		KittyCount::<TestRuntime>::set(max_u32);
 		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyCountOverflow);
 	});
 }
