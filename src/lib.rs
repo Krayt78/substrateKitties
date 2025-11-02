@@ -18,6 +18,9 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
+	#[pallet::storage]
+	pub type KittyCount<T: Config> = StorageValue<Value = u32>;
+
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
@@ -25,7 +28,9 @@ pub mod pallet {
 	}
 
 	#[pallet::error]
-	pub enum Error<T> {}
+	pub enum Error<T> {
+		KittyCountOverflow,
+	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {

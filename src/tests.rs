@@ -121,3 +121,31 @@ fn create_kitty_check_if_signed() {
 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
 	});
 }
+
+#[test]
+fn create_kitty_emits_event() {
+	new_test_ext().execute_with(|| {
+		System::set_block_number(1);
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+		System::assert_last_event(Event::<TestRuntime>::Created { owner: ALICE }.into());
+	});
+}
+
+#[test]
+fn create_kitty_increments_kitty_count(){
+	new_test_ext().execute_with(|| {
+		let starting_count = KittyCount::<TestRuntime>::get().unwrap_or(0);
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+		let after_mint_count = KittyCount::<TestRuntime>::get().unwrap_or(0);
+		assert_eq!(starting_count+1, after_mint_count);
+	});
+}
+
+#[test]
+fn create_kitty_overflows_kitty_count(){
+	new_test_ext().execute_with(|| {
+		let max_u32 = u32::MAX;
+		KittyCount::<TestRuntime>::set(Some(max_u32));
+		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyCountOverflow);
+	});
+}
