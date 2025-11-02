@@ -21,6 +21,9 @@ pub mod pallet {
 	#[pallet::storage]
 	pub type KittyCount<T: Config> = StorageValue<Value = u32, QueryKind = ValueQuery>;
 
+	#[pallet::storage]
+	pub type Kitties<T: Config> = StorageMap<Value = (), Key = [u8; 32]>;
+	
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
@@ -36,7 +39,8 @@ pub mod pallet {
 	impl<T: Config> Pallet<T> {
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			Self::mint(who)?;
+			let kitty_id = [0; 32];
+			Self::mint(who, kitty_id)?;
 			Ok(())
 		}
 	}

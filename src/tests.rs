@@ -149,3 +149,12 @@ fn create_kitty_overflows_kitty_count(){
 		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyCountOverflow);
 	});
 }
+
+#[test]
+fn create_kitty_inserts_kitty_into_storage(){
+	new_test_ext().execute_with(|| {
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+		let kitty_id = [0; 32];
+		assert!(Kitties::<TestRuntime>::contains_key(kitty_id));
+	});
+}
