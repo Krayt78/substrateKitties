@@ -158,3 +158,11 @@ fn create_kitty_inserts_kitty_into_storage(){
 		assert!(Kitties::<TestRuntime>::contains_key(kitty_id));
 	});
 }
+
+#[test]
+fn create_kitty_fails_if_kitty_already_minted(){
+	new_test_ext().execute_with(|| {
+		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyAlreadyMinted);
+	});
+}

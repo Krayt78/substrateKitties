@@ -33,6 +33,7 @@ pub mod pallet {
 	#[pallet::error]
 	pub enum Error<T> {
 		KittyCountOverflow,
+		KittyAlreadyMinted,
 	}
 
 	#[pallet::call]
