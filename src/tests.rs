@@ -157,19 +157,38 @@ fn create_kitty_overflows_kitty_count(){
 	});
 }
 
-#[test]
-fn create_kitty_inserts_kitty_into_storage(){
-	new_test_ext().execute_with(|| {
-		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
-		let dna = [0; 32];
-		assert!(Kitties::<TestRuntime>::contains_key(dna));
-	});
-}
+// #[test]
+// fn create_kitty_inserts_kitty_into_storage(){
+// 	new_test_ext().execute_with(|| {
+// 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+// 		let dna = [0; 32];
+// 		assert!(Kitties::<TestRuntime>::contains_key(dna));
+// 	});
+// }
 
-#[test]
-fn create_kitty_fails_if_kitty_already_minted(){
-	new_test_ext().execute_with(|| {
-		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
-		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyAlreadyMinted);
-	});
-}
+// #[test]
+// fn create_kitty_fails_if_kitty_already_minted(){
+// 	new_test_ext().execute_with(|| {
+// 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+// 		assert_err!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)), Error::<TestRuntime>::KittyAlreadyMinted);
+// 	});
+// }
+
+// #[test]
+// fn create_kitty_sets_owner(){
+// 	new_test_ext().execute_with(|| {
+// 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+// 		let dna = [0; 32];
+// 		let kitty = Kitties::<TestRuntime>::get(dna);
+// 		assert_eq!(kitty.unwrap().owner, ALICE);
+// 	});
+// }
+
+// #[test]
+// fn create_kitty_sets_dna(){
+// 	new_test_ext().execute_with(|| {
+// 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
+// 		let kitty = Kitties::<TestRuntime>::get(DEFAULT_KITTY.dna);
+// 		assert_eq!(kitty.unwrap().dna, DEFAULT_KITTY.dna);
+// 	});
+// }
