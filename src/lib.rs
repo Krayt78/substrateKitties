@@ -31,6 +31,9 @@ pub mod pallet {
 	#[pallet::storage]
 	pub type Kitties<T: Config> = StorageMap<Value = Kitty<T>, Key = [u8; 32]>;
 	
+	#[pallet::storage]
+	pub type KittiesOwned<T: Config> = StorageMap<Value = Vec<Kitty<T>>, Key = T::AccountId, QueryKind = ValueQuery>;
+	
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
