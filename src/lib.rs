@@ -32,7 +32,7 @@ pub mod pallet {
 	pub type Kitties<T: Config> = StorageMap<Value = Kitty<T>, Key = [u8; 32]>;
 	
 	#[pallet::storage]
-	pub type KittiesOwned<T: Config> = StorageMap<Value = Vec<Kitty<T>>, Key = T::AccountId, QueryKind = ValueQuery>;
+	pub type KittiesOwned<T: Config> = StorageMap<Value = BoundedVec<Kitty<T>, ConstU32<100>>, Key = T::AccountId, QueryKind = ValueQuery>;
 	
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -44,6 +44,7 @@ pub mod pallet {
 	pub enum Error<T> {
 		KittyCountOverflow,
 		KittyAlreadyMinted,
+		TooManyKittiesOwned,
 	}
 
 	#[pallet::call]
