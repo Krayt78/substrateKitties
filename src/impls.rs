@@ -7,7 +7,7 @@ impl<T: Config> Pallet<T> {
 		let current_kitty_count = KittyCount::<T>::get();
 		let new_kitty_count = current_kitty_count.checked_add(1).ok_or(Error::<T>::KittyCountOverflow)?;
 		KittyCount::<T>::set(new_kitty_count);
-		Kitties::<T>::insert(dna, ());
+		Kitties::<T>::insert(dna, Kitty { owner: owner.clone(), dna });
 		Self::deposit_event(Event::<T>::Created { owner });
 		Ok(())
 	}
