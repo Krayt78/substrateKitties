@@ -29,6 +29,13 @@ type Block = frame_system::mocking::MockBlock<TestRuntime>;
 const ALICE: u64 = 1;
 const BOB: u64 = 2;
 
+// Default kitty for testing purposes
+#[allow(unused)]
+const DEFAULT_KITTY: Kitty<TestRuntime> = Kitty {
+	owner: 0,
+	dna: [0; 32],
+};
+
 #[runtime]
 mod runtime {
 	#[runtime::derive(
@@ -154,8 +161,8 @@ fn create_kitty_overflows_kitty_count(){
 fn create_kitty_inserts_kitty_into_storage(){
 	new_test_ext().execute_with(|| {
 		assert_ok!(PalletKitties::create_kitty(RuntimeOrigin::signed(ALICE)));
-		let kitty_id = [0; 32];
-		assert!(Kitties::<TestRuntime>::contains_key(kitty_id));
+		let dna = [0; 32];
+		assert!(Kitties::<TestRuntime>::contains_key(dna));
 	});
 }
 
