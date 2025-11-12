@@ -5,6 +5,8 @@ mod tests;
 
 use frame::prelude::*;
 pub use pallet::*;
+use frame::traits::fungible::Inspect;
+use frame::traits::fungible::Mutate;
 
 #[frame::pallet(dev_mode)]
 pub mod pallet {
@@ -16,11 +18,17 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+
+		/// Access the balances pallet through the associated type `NativeBalance`.
+		/// The `NativeBalance` type must implement `Inspect` and `Mutate`.
+		/// Both of these traits are generic over the `AccountId` type.
+		type NativeBalance: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
 	}
 
 	#[derive(Encode, Decode, MaxEncodedLen, TypeInfo)]
 	#[scale_info(skip_type_params(T))]
 	pub struct Kitty<T: Config> {
+		pub price: Option<BalanceOf<T>>,
 		pub owner: T::AccountId,
 		pub dna: [u8; 32],
 	}
@@ -32,12 +40,13 @@ pub mod pallet {
 	pub type Kitties<T: Config> = StorageMap<Value = Kitty<T>, Key = [u8; 32]>;
 	
 	#[pallet::storage]
-	pub type KittiesOwned<T: Config> = StorageMap<Value = BoundedVec<Kitty<T>, ConstU32<100>>, Key = T::AccountId, QueryKind = ValueQuery>;
+	pub type KittiesOwned<T: Config> = StorageMap<Value = BoundedVec<[u8; 32], ConstU32<100>>, Key = T::AccountId, QueryKind = ValueQuery>;
 	
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		Created { owner: T::AccountId },
+		Transferred {from: T::AccountId, to: T::AccountId, kitty_id: [u8;32]},
 	}
 
 	#[pallet::error]
@@ -45,6 +54,9 @@ pub mod pallet {
 		KittyCountOverflow,
 		KittyAlreadyMinted,
 		TooManyKittiesOwned,
+		KittyNotFound,
+		TransferToSelf,
+		NotOwner,
 	}
 
 	#[pallet::call]
@@ -52,6 +64,12 @@ pub mod pallet {
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::mint(who)?;
+			Ok(())
+		}
+
+		pub fn transfer_kitty(origin: OriginFor<T>, to: T::AccountId, kitty_id: [u8; 32]) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			Self::do_transfer(who, to, kitty_id)?;
 			Ok(())
 		}
 	}

@@ -87,6 +87,7 @@ impl pallet_balances::Config for TestRuntime {
 // will also need to update this configuration to represent that.
 impl pallet_kitties::Config for TestRuntime {
 	type RuntimeEvent = RuntimeEvent;
+	type NativeBalance = PalletBalances;
 }
 
 // We need to run most of our tests using this function: `new_test_ext().execute_with(|| { ... });`
@@ -192,3 +193,14 @@ fn create_kitty_overflows_kitty_count(){
 // 		assert_eq!(kitty.unwrap().dna, DEFAULT_KITTY.dna);
 // 	});
 // }
+
+#[test]
+fn native_balance_associated_type_works() {
+	new_test_ext().execute_with(|| {
+		assert_ok!(<<TestRuntime as Config>::NativeBalance as Mutate<_>>::mint_into(&ALICE, 1337));
+		assert_eq!(
+			<<TestRuntime as Config>::NativeBalance as Inspect<_>>::total_balance(&ALICE),
+			1337
+		);
+	});
+}
