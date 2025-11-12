@@ -10,7 +10,7 @@ impl<T: Config> Pallet<T> {
 		let current_kitty_count = KittyCount::<T>::get();
 		let new_kitty_count = current_kitty_count.checked_add(1).ok_or(Error::<T>::KittyCountOverflow)?;
 		KittyCount::<T>::set(new_kitty_count);
-		Kitties::<T>::insert(dna, Kitty { owner: owner.clone(), dna });
+		Kitties::<T>::insert(dna, Kitty { price:None, owner: owner.clone(), dna });
 		KittiesOwned::<T>::try_append(&owner, dna).map_err(|_| Error::<T>::TooManyKittiesOwned)?;
 		Self::deposit_event(Event::<T>::Created { owner });
 		Ok(())
@@ -32,6 +32,7 @@ impl<T: Config> Pallet<T> {
 		ensure!(kitty.owner == from, Error::<T>::NotOwner);
 
 		kitty.owner = to.clone();
+		kitty.price = None;
 		
 		let mut to_owned = KittiesOwned::<T>::get(&to);
 		to_owned.try_push(kitty_id).map_err(|_| Error::<T>::TooManyKittiesOwned)?;

@@ -32,6 +32,7 @@ const BOB: u64 = 2;
 // Default kitty for testing purposes
 #[allow(unused)]
 const DEFAULT_KITTY: Kitty<TestRuntime> = Kitty {
+	price: None,
 	owner: 0,
 	dna: [0; 32],
 };

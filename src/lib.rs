@@ -8,6 +8,10 @@ pub use pallet::*;
 use frame::traits::fungible::Inspect;
 use frame::traits::fungible::Mutate;
 
+// Allows easy access our Pallet's `Balance` type. Comes from `Fungible` interface.
+pub type BalanceOf<T> =
+	<<T as Config>::NativeBalance as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
+
 #[frame::pallet(dev_mode)]
 pub mod pallet {
 	use super::*;
