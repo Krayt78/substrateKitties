@@ -2,6 +2,7 @@ use super::*;
 use frame::prelude::*;
 use frame::primitives::BlakeTwo256;
 use frame::traits::Hash;
+use frame::traits::tokens::Preservation;
 
 impl<T: Config> Pallet<T> {
 	pub fn mint(owner: T::AccountId) -> DispatchResult {
@@ -57,6 +58,20 @@ impl<T: Config> Pallet<T> {
 		kitty.price = Some(new_price.clone());
 		Kitties::<T>::insert(kitty_id, kitty);
 		Self::deposit_event(Event::<T>::PriceSet { kitty_id, new_price });
+		Ok(())
+	}
+
+	pub fn do_buy_kitty(caller: T::AccountId, kitty_id: [u8; 32], buy_price: BalanceOf<T>) -> DispatchResult {
+		let kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotFound)?;
+		let kitty_price = kitty.price.ok_or(Error::<T>::KittyNotForSale)?;
+		ensure!(buy_price >= kitty_price, Error::<T>::BuyPriceTooLow);
+
+		T::NativeBalance::transfer(&caller, &kitty.owner, kitty_price, Preservation::Preserve)?;
+		let owner = kitty.owner.clone();
+		Self::do_transfer(kitty.owner, caller.clone(), kitty_id)?;
+		Self::deposit_event(Event::<T>::Sold { seller: owner, buyer: caller, kitty_id, price: kitty_price });
+
+		//might need to reset the price to None
 		Ok(())
 	}
 }

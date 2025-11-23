@@ -52,16 +52,20 @@ pub mod pallet {
 		Created { owner: T::AccountId },
 		Transferred {from: T::AccountId, to: T::AccountId, kitty_id: [u8;32]},
 		PriceSet { kitty_id: [u8; 32], new_price: BalanceOf<T> },
+		Sold { seller: T::AccountId, buyer: T::AccountId, kitty_id: [u8; 32], price: BalanceOf<T> },
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
 		KittyCountOverflow,
 		KittyAlreadyMinted,
+		KittyNotForSale,
 		TooManyKittiesOwned,
 		KittyNotFound,
 		TransferToSelf,
 		NotOwner,
+		InsufficientBalance,
+		BuyPriceTooLow,
 	}
 
 	#[pallet::call]
@@ -81,6 +85,12 @@ pub mod pallet {
 		pub fn set_price(origin: OriginFor<T>, kitty_id: [u8; 32], price: BalanceOf<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::do_set_price(who, kitty_id, price)?;
+			Ok(())
+		}
+
+		pub fn buy_kitty(origin: OriginFor<T>, kitty_id: [u8; 32], buy_price: BalanceOf<T>) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			Self::do_buy_kitty(who, kitty_id, buy_price)?;
 			Ok(())
 		}
 	}
