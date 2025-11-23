@@ -50,4 +50,13 @@ impl<T: Config> Pallet<T> {
 		Self::deposit_event(Event::<T>::Transferred{from, to, kitty_id});
 		Ok(())
 	}
+
+	pub fn do_set_price(caller: T::AccountId, kitty_id: [u8; 32], new_price: BalanceOf<T>) -> DispatchResult {
+		let mut kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotFound)?;
+		ensure!(kitty.owner == caller, Error::<T>::NotOwner);
+		kitty.price = Some(new_price.clone());
+		Kitties::<T>::insert(kitty_id, kitty);
+		Self::deposit_event(Event::<T>::PriceSet { kitty_id, new_price });
+		Ok(())
+	}
 }
